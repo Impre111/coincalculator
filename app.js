@@ -1,72 +1,35 @@
-// Main application controller
-class CoinCalculatorApp {
-    constructor() {
-        this.updateInterval = null;
-        this.summaryInterval = null;
+async function updateSupply() {
+    const supplyElement = document.getElementById('supply');
+    const updateElement = document.getElementById('last-update');
+    const url = "https://blockchain.info/q/totalbc";
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Error al conectar con la API');
+
+        const satoshisStr = await response.text();
+        const btc = parseFloat(satoshisStr) / 100_000_000;
+
+        // Formatear el número
+        supplyElement.innerText = btc.toLocaleString('es-ES', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+
+        // Actualizar la hora
+        const now = new Date();
+        updateElement.innerText = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    } catch (error) {
+        console.error(error);
+        supplyElement.innerText = "Error";
     }
 
-    async initialize() {
-        try {
-            // Initialize UI
-            uiManager.initialize();
-
-            // Load initial data
-            await this.updatePrices();
-
-            // Set demo values after a short delay
-            setTimeout(() => {
-                uiManager.setDemoValues();
-            }, 2000);
-
-            // Start periodic updates
-            this.startPeriodicUpdates();
-
-            console.log('Coin Calculator initialized successfully');
-        } catch (error) {
-            console.error('Failed to initialize application:', error);
-        }
-    }
-
-    async updatePrices() {
-        try {
-            const prices = await apiService.fetchPriceData();
-            calculator.updatePrices(prices);
-            uiManager.updatePriceDisplay(prices);
-        } catch (error) {
-            console.error('Failed to update prices:', error);
-        }
-    }
-
-    startPeriodicUpdates() {
-        // Update prices every minute
-        this.updateInterval = setInterval(() => {
-            this.updatePrices();
-        }, CONFIG.API.UPDATE_INTERVAL);
-
-        // Update summary display slightly offset
-        this.summaryInterval = setInterval(() => {
-            const prices = calculator.prices;
-            if (Object.keys(prices).length > 0) {
-                uiManager.updatePriceDisplay(prices);
-            }
-        }, CONFIG.API.SUMMARY_UPDATE_INTERVAL);
-    }
-
-    destroy() {
-        if (this.updateInterval) {
-            clearInterval(this.updateInterval);
-        }
-        if (this.summaryInterval) {
-            clearInterval(this.summaryInterval);
-        }
-    }
+    // Programar la siguiente actualización en un rango de 1 a 2.5 minutos (60,000 a 150,000 ms)
+    const randomMs = Math.floor(Math.random() * (150000 - 60000 + 1)) + 60000;
+    console.log(`Próxima actualización en ${(randomMs / 60000).toFixed(2)} minutos`);
+    setTimeout(updateSupply, randomMs);
 }
 
-// Initialize application when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    const app = new CoinCalculatorApp();
-    app.initialize();
-
-    // Make app globally available for debugging
-    window.coinCalculatorApp = app;
-});
+// Cargar al inicio
+updateSupply();
