@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coinautas v2 | Calculadora Cripto</title>
+    <link rel="stylesheet" href="calc.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="background-glow"></div>
+    <div class="dashboard">
+        <header>
+            <div class="settings-control" id="settings-trigger">
+                <span>⚙️</span>
+            </div>
+            <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg" alt="BTC" class="header-logo">
+            <h1>Coinautas Unidos <br>Coinauts United <br>硬幣太空人 和睦的</h1>
+            <p>Calculadora Multi-Divisa en Tiempo Real</p>
+        </header>
+
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="settings-panel">
+            <div class="settings-header">
+                <h3>Configuración de Vista</h3>
+                <button id="close-settings" class="close-btn">&times;</button>
+            </div>
+            <div id="visibility-list" class="visibility-list">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="suggestion-box">
+                <button id="suggest-btn" class="suggest-btn">📥 Sugerir nueva moneda</button>
+            </div>
+        </div>
+        <div id="settings-overlay" class="settings-overlay"></div>
+
+        <section class="summary">
+            <div class="summary-card">
+                <label>
+                    <div class="dot"></div>BTC En Circulación
+                </label>
+                <span id="btc-supply-now">---</span>
+            </div>
+            <div class="summary-card">
+                <label>BTC/USD</label>
+                <span id="summary-usd">---</span>
+            </div>
+            <div class="summary-card">
+                <label>BTC/EUR</label>
+                <span id="summary-eur">---</span>
+            </div>
+            <div class="summary-card">
+                <label>1$ en Satoshis</label>
+                <span id="summary-usdsat">---</span>
+            </div>
+            <div class="summary-card">
+                <label>1 Sat en VES (Yadio)</label>
+                <span id="summary-vesat">---</span>
+            </div>
+            <div class="summary-card">
+                <label>1 Bs en Satoshis (Yadio)</label>
+                <span id="summary-satves">---</span>
+            </div>
+            <div class="summary-card highlight">
+                <label>Brecha Yadio vs CMC</label>
+                <span id="summary-vesdiff">---</span>
+            </div>
+        </section>
+
+        <div class="groups">
+            <!-- Gubernamentales -->
+            <section class="group">
+                <h2>Gubernamentales</h2>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/us.svg" alt="USA"></span>
+                    <span class="label">USD</span>
+                    <input type="number" id="USD" value="1">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/eu.svg" alt="EU"></span>
+                    <span class="label">EUR</span>
+                    <input type="number" id="EUR">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/cn.svg" alt="China"></span>
+                    <span class="label">CNY</span>
+                    <input type="number" id="CNY">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/ve.svg" alt="Venezuela"></span>
+                    <span class="label">VES (Yadio)</span>
+                    <input type="number" id="VES_YADIO">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/ve.svg" alt="Venezuela"></span>
+                    <span class="label">VES (CMC)</span>
+                    <input type="number" id="VES_CMC">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/co.svg" alt="Colombia"></span>
+                    <span class="label">COP</span>
+                    <input type="number" id="COP">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/ca.svg" alt="Canada"></span>
+                    <span class="label">CAD</span>
+                    <input type="number" id="CAD">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/br.svg" alt="Brazil"></span>
+                    <span class="label">BRL</span>
+                    <input type="number" id="BRL">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/ar.svg" alt="Argentina"></span>
+                    <span class="label">ARS</span>
+                    <input type="number" id="ARS">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/cl.svg" alt="Chile"></span>
+                    <span class="label">CLP</span>
+                    <input type="number" id="CLP">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/mx.svg" alt="Mexico"></span>
+                    <span class="label">MXN</span>
+                    <input type="number" id="MXN">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag"><img src="https://flagcdn.com/gb.svg" alt="UK"></span>
+                    <span class="label">GBP</span>
+                    <input type="number" id="GBP">
+                </div>
+            </section>
+
+            <!-- eCoins -->
+            <section class="group">
+                <h2>Criptoactivos</h2>
+
+                <div class="input-row">
+                    <span class="flag">₿</span>
+                    <span class="label">BTC</span>
+                    <input type="number" id="BTC">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">⚡</span>
+                    <span class="label">SAT</span>
+                    <input type="number" id="SAT">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">Ξ</span>
+                    <span class="label">ETH</span>
+                    <input type="number" id="ETH">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">Ð</span>
+                    <span class="label">DOGE</span>
+                    <input type="number" id="DOGE">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">Ł</span>
+                    <span class="label">LTC</span>
+                    <input type="number" id="LTC">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">ɱ</span>
+                    <span class="label">XMR</span>
+                    <input type="number" id="XMR">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">₳</span>
+                    <span class="label">ADA</span>
+                    <input type="number" id="ADA">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">☀️</span>
+                    <span class="label">SOL</span>
+                    <input type="number" id="SOL">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">💧</span>
+                    <span class="label">SUI</span>
+                    <input type="number" id="SUI">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">✖️</span>
+                    <span class="label">XRP</span>
+                    <input type="number" id="XRP">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">🔸</span>
+                    <span class="label">BNB</span>
+                    <input type="number" id="BNB">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">❄️</span>
+                    <span class="label">AVAX</span>
+                    <input type="number" id="AVAX">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">💜</span>
+                    <span class="label">POL</span>
+                    <input type="number" id="POL">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">💎</span>
+                    <span class="label">YFI</span>
+                    <input type="number" id="YFI">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">💨</span>
+                    <span class="label">DASH</span>
+                    <input type="number" id="DASH">
+                </div>
+
+                <div class="input-row">
+                    <span class="flag">🔺</span>
+                    <span class="label">TRX</span>
+                    <input type="number" id="TRX">
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            Datos sincronizados cada 60s con CoinMarketCap API
+        </footer>
+    </div>
+
+    <script src="calc.js"></script>
+</body>
+
+</html>

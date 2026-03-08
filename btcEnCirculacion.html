@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Supply Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="background-glow"></div>
+
+    <div class="container">
+        <div class="card">
+            <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg" alt="Bitcoin Logo" class="logo">
+            <h1>Bitcoin en Circulación</h1>
+            <div id="supply" class="supply-value">---</div>
+            <div class="unit">BTC</div>
+
+            <div class="status">
+                <div class="dot"></div>
+                <span id="status-text">Actualizado: <span id="last-update">---</span></span>
+            </div>
+        </div>
+    </div>
+
+    <footer>Blockchain API | Direct Query</footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
