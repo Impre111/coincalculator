@@ -39,27 +39,42 @@ const config = {
     YFI: { symbol: 'YFI', name: 'yearn.finance', type: 'crypto', digits: 8 },
     TRX: { symbol: 'TRX', name: 'TRON', type: 'crypto', digits: 8 },
     SAT: { symbol: 'sat', name: 'Satoshi', type: 'btc', digits: 0 },
-    BTC: { symbol: '₿', name: 'Bitcoin', type: 'btc', digits: 8 }
+    BTC: { symbol: '₿', name: 'Bitcoin', type: 'btc', digits: 8 },
+    CUSTOM: { symbol: '⭐', name: 'Personalizado', type: 'btc', digits: 2 }
 };
 
 async function updateSupply() {
     const supplyNowElement = document.getElementById('btc-supply-now');
-    const url = "https://blockchain.info/q/totalbc";
+    const sources = [
+        { url: "https://blockchain.info/q/totalbc", parser: (text) => parseFloat(text) / 100_000_000 },
+        { url: "https://api.blockchain.info/stats", parser: (json) => json.total_bc / 100_000_000, isJson: true },
+        { url: "https://api.blockchair.com/bitcoin/stats", parser: (json) => json.data.circulation / 100_000_000, isJson: true }
+    ];
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Error al conectar con la API');
+    let success = false;
 
-        const satoshisStr = await response.text();
-        const btc = parseFloat(satoshisStr) / 100_000_000;
+    for (const source of sources) {
+        try {
+            const response = await fetch(source.url);
+            if (!response.ok) continue;
 
-        supplyNowElement.innerText = btc.toLocaleString('es-ES', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
+            const data = source.isJson ? await response.json() : await response.text();
+            const btc = source.parser(data);
 
-    } catch (error) {
-        console.error("Error updating supply:", error);
+            if (!isNaN(btc) && btc > 0) {
+                supplyNowElement.innerText = btc.toLocaleString('es-ES', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                });
+                success = true;
+                break;
+            }
+        } catch (error) {
+            console.warn(`Failed to fetch from ${source.url}:`, error);
+        }
+    }
+
+    if (!success) {
         supplyNowElement.innerText = "Error";
     }
 
@@ -259,8 +274,30 @@ function updateAllFields(sourceId) {
     const inputElement = document.getElementById(sourceId);
     if (!inputElement) return;
 
-    const sourceValue = parseFloat(inputElement.value) || 0;
+    // Actualizar tasa personalizada antes de calcular
+    const customPriceInput = document.getElementById('custom-price');
+    if (customPriceInput && rates.USD) {
+        // Limpiar valor de posibles comas y asegurar que sea un número válido > 0
+        const rawPrice = customPriceInput.value.replace(',', '.');
+        const customPrice = parseFloat(rawPrice);
+        
+        if (customPrice > 0) {
+            rates.CUSTOM = rates.USD / customPrice;
+        } else {
+            rates.CUSTOM = 0;
+        }
+    }
+
+    const rawValue = (inputElement.value || '').replace(',', '.');
+    const sourceValue = rawValue === '' ? 0 : parseFloat(rawValue);
+    
+    // Si no es un número válido y no está vacío, ignorar
+    if (isNaN(sourceValue) && rawValue !== '') return;
+
     const sourceRateInBtc = (sourceId === 'BTC') ? 1 : (sourceId === 'SAT' ? 100000000 : rates[sourceId]);
+
+    // Evitar división por cero
+    if (!sourceRateInBtc || sourceRateInBtc === 0) return;
 
     // BTC equivalent of the source input
     const btcAmount = sourceValue / sourceRateInBtc;
@@ -276,7 +313,7 @@ function updateAllFields(sourceId) {
         } else if (id === 'SAT') {
             targetValue = btcAmount * 100000000;
         } else {
-            targetValue = btcAmount * rates[id];
+            targetValue = btcAmount * (rates[id] || 0);
         }
 
         const digits = config[id]?.digits ?? 2;
@@ -335,6 +372,42 @@ document.addEventListener('input', (e) => {
         localStorage.setItem('lastBaseValue', val);
     }
 });
+
+// Guardar también el precio personalizado
+document.addEventListener('input', (e) => {
+    if (e.target.id === 'custom-price') {
+        localStorage.setItem('lastCustomPrice', e.target.value);
+    }
+});
+
+// Custom Price Listener
+const setPriceBtn = document.getElementById('set-custom-price-btn');
+if (setPriceBtn) {
+    setPriceBtn.onclick = () => {
+        // Trigger calculation using the current CUSTOM amount if it exists, 
+        // or USD as fallback
+        const customInput = document.getElementById('CUSTOM');
+        if (customInput && customInput.value) {
+            updateAllFields('CUSTOM');
+        } else {
+            updateAllFields('USD');
+        }
+    };
+}
+
+const customPriceInput = document.getElementById('custom-price');
+if (customPriceInput) {
+    // Restaurar precio guardado
+    const savedPrice = localStorage.getItem('lastCustomPrice');
+    if (savedPrice) customPriceInput.value = savedPrice;
+
+    customPriceInput.oninput = () => {
+        const customInput = document.getElementById('CUSTOM');
+        if (customInput && customInput.value) {
+            updateAllFields('CUSTOM');
+        }
+    };
+}
 
 // Init
 fetchRates();
