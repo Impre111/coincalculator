@@ -40,7 +40,7 @@ const config = {
     TRX: { symbol: 'TRX', name: 'TRON', type: 'crypto', digits: 8 },
     SAT: { symbol: 'sat', name: 'Satoshi', type: 'btc', digits: 0 },
     BTC: { symbol: '₿', name: 'Bitcoin', type: 'btc', digits: 8 },
-    CUSTOM: { symbol: '⭐', name: 'Personalizado', type: 'btc', digits: 2 }
+    CUSTOM: { symbol: '⭐', name: 'Activo Personalizado', type: 'crypto', digits: 8 }
 };
 
 async function updateSupply() {
